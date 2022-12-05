@@ -18,7 +18,6 @@ def solution():
         assignment_line = assignment_line.strip('\n')
         assignment_one, assignment_two = assignment_line.split(',')
         if overlaps(assignment_one, assignment_two):
-            print(assignment_one,assignment_two)
             overlap_value_total += 1
 
     return overlap_value_total
