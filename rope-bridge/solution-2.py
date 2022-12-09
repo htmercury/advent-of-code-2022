@@ -1,6 +1,8 @@
 input_file = open('rope-bridge/input.txt', 'r')
 commands = input_file.readlines()
 
+MAX_LENGTH_ROPE = 10
+
 movement = {
     'U': [0, 1],
     'D': [0, -1],
@@ -45,10 +47,10 @@ for command in commands:
 
     for _ in range(amount):
         knots[0].move(direction)
-        for i in range(1, 10):
+        for i in range(1, MAX_LENGTH_ROPE):
             knots[i].follow(knots[i-1])
 
-        if str(knots[9]) not in visited:
-            visited.append(str(knots[-1]))
+        if str(knots[MAX_LENGTH_ROPE - 1]) not in visited:
+            visited.append(str(knots[MAX_LENGTH_ROPE - 1]))
 
 print(len(visited))
