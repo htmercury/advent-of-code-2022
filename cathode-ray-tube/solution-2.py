@@ -17,8 +17,7 @@ def perform_noop(sprite, sprite_pos, cycle, image, image_list):
         image += '.'
     sprite += 1
     if cycle in cycle_targets:
-        image_list.append(image)
-        image = ''
+        image += '\n'
         sprite = 0
         cycle = 0
     
@@ -39,7 +38,6 @@ def solution():
     sprite_pos = get_sprite_pos(register_value)
 
     image = ''
-    image_list = []
 
     for command in command_list:
         if command[:4] == COMMAND_ADD:
@@ -50,7 +48,6 @@ def solution():
             # noop
             curr_sprite, curr_cycle, image = perform_noop(curr_sprite, sprite_pos, curr_cycle, image, image_list)
 
-    for img in image_list:
-        print(img, len(img))
+    return image
 
-solution()
+print(solution())
