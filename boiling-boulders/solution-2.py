@@ -45,18 +45,18 @@ def is_valid(point):
         valid_z = z >= z_min and z <= z_max
         return valid_x and valid_y and valid_z
 
-def get_air_bubble_points(cube_points):
-    air_bubble_points = set()
+def get_external_points(cube_points):
+    external_points = set()
     point_q = []
     point_q.append((x_min, y_min, z_min))
 
     # find empty points in the cube points set
     while len(point_q) != 0:
         curr_point = point_q.pop(0)
-        if curr_point in air_bubble_points:
+        if curr_point in external_points:
             continue
         
-        air_bubble_points.add(curr_point)   
+        external_points.add(curr_point)   
         curr_x, curr_y, curr_z = curr_point
         
         for x_offset, y_offset, z_offset in adjacent_offsets:
@@ -64,10 +64,10 @@ def get_air_bubble_points(cube_points):
             if is_valid(new_point) and new_point not in cube_points:
                 point_q.append(new_point)
                 
-    return air_bubble_points
+    return external_points
 
 def get_lava_points():
-    air_bubble_points = get_air_bubble_points(cube_points)
+    external_points = get_external_points(cube_points)
 
     lava = set()
     for x in range(x_min, x_max + 1):
@@ -75,7 +75,7 @@ def get_lava_points():
             for z in range(z_min, z_max + 1):
                 lava.add((x, y, z))
 
-    lava -= air_bubble_points
+    lava -= external_points
     
     return lava
 
