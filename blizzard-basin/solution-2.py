@@ -50,23 +50,35 @@ class Blizzard:
             return (y, len(map_data[0]) - 3)
 
 
-blizzard_spots = []
+def gcd(a,b):
+    if a == 0:
+        return b
+    return gcd(b % a, a)
 
-for j, line in enumerate(map_data):
-    line = line.strip('\n')
-    for i, char in enumerate(line):
-        if char == '.':
-            map_spots.add((j, i))
-            if not src:
-                src = (j, i)
-            dest = (j, i)
-        elif char != '#':
-            map_spots.add((j, i))
-            blizzard_spots.append(Blizzard((j, i), char))
+def lcm(a,b):
+    return (a // gcd(a,b))* b
 
-print(src, dest)
+def parse_input():
+    map_spots = set()
+    blizzard_spots = []
+    src = None
 
-def print_map():
+    for j, line in enumerate(map_data):
+        line = line.strip('\n')
+        for i, char in enumerate(line):
+            if char == '.':
+                map_spots.add((j, i))
+                if not src:
+                    src = (j, i)
+                dest = (j, i)
+            elif char != '#':
+                map_spots.add((j, i))
+                blizzard_spots.append(Blizzard((j, i), char))
+
+    map_length = lcm(len(map_data), len(map_data[0]))
+    return map_spots, map_length, (src, dest), blizzard_spots
+
+def print_map(map_data):
     for j in range(len(map_data)):
         row = ''
         for i in range(len(map_data[0])  - 1):
@@ -87,18 +99,7 @@ def print_map():
                 row += '#'
         print(row)
 
-def gcd(a,b):
-    if a == 0:
-        return b
-    return gcd(b % a, a)
-
-def lcm(a,b):
-    return (a // gcd(a,b))* b
-
-map_length = lcm(len(map_data), len(map_data[0]))
-print(map_length)
-
-def traverse(src, dest, init_t):
+def traverse(map_spots, map_length, blizzard_spots, src, dest, init_t):
     path_q = []
     path_q.append((src, init_t))
     blizzard_hist = [set(map(lambda b: b.loc, blizzard_spots))]
@@ -120,7 +121,7 @@ def traverse(src, dest, init_t):
                 b.move(map_spots)
             new_blizzard_hist = set(map(lambda b: b.loc, blizzard_spots))
             blizzard_hist.append(new_blizzard_hist)
-            print(curr_t)
+            # print(curr_t)
 
 
         for m in moves:
@@ -133,8 +134,13 @@ def traverse(src, dest, init_t):
             if new_pos not in blizzard_hist[curr_t - init_t + 1]:
                 path_q.append((new_pos, curr_t + 1))
 
-curr_t = traverse(src, dest, 0)
-next_t = traverse(dest, src, curr_t + 1)
-last_t = traverse(src, dest, next_t + 1)
+def solution():
+    map_spots, map_length, (src, dest), blizzard_spots = parse_input()
 
-print(curr_t, next_t, last_t)
+    curr_t = traverse(map_spots, map_length, blizzard_spots, src, dest, 0)
+    next_t = traverse(map_spots, map_length, blizzard_spots, dest, src, curr_t + 1)
+    last_t = traverse(map_spots, map_length, blizzard_spots, src, dest, next_t + 1)
+
+    return last_t
+
+print(solution())
