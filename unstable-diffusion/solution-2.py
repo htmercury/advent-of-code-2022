@@ -38,10 +38,18 @@ def rotate_list(lst):
     return lst[1:] + lst[:1]
 
 def check_adjacent_areas(elf_pos, elves_map, directions):
-    return all(list(map(lambda move_diff: move(elf_pos, move_diff) not in elves_map, directions.values())))
+    for move_diff in directions.values():
+        if move(elf_pos, move_diff) in elves_map:
+            return False
+    
+    return True
 
-def is_decision_valid(direction_checks, elf_pos, elves_map, directions):    
-    return all(list(map(lambda d: move(elf_pos, directions[d]) not in elves_map, direction_checks)))
+def is_decision_valid(direction_checks, elf_pos, elves_map, directions):
+    for d in direction_checks:
+        if move(elf_pos, directions[d]) in elves_map:
+            return False
+    
+    return True
 
 def perform_diffusion(elves_map, directions, decision_choices):
     curr_round = 0
