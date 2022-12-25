@@ -71,7 +71,7 @@ def parse_input():
     map_length = lcm(len(map_data), len(map_data[0]))
     return map_spots, map_length, (src, dest), blizzard_spots
 
-def print_map(map_data):
+def print_map(map_data, map_spots, blizzard_spots):
     for j in range(len(map_data)):
         row = ''
         for i in range(len(map_data[0])  - 1):

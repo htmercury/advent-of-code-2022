@@ -1,11 +1,6 @@
 input_file = open('blizzard-basin/input.txt', 'r')
 map_data = input_file.readlines()
 
-map_spots = set()
-
-src = None
-dest = None
-
 blizzards = {
     '^': (-1, 0),
     '>': (0, 1),
@@ -78,7 +73,7 @@ def parse_input():
     map_length = lcm(len(map_data), len(map_data[0]))
     return map_spots, map_length, (src, dest), blizzard_spots
 
-def print_map(map_data):
+def print_map(map_data, map_spots, blizzard_spots):
     for j in range(len(map_data)):
         row = ''
         for i in range(len(map_data[0])  - 1):
@@ -104,11 +99,13 @@ def traverse(map_spots, map_length, blizzard_spots, src, dest, init_t):
     path_q.append((src, init_t))
     blizzard_hist = [set(map(lambda b: b.loc, blizzard_spots))]
     visited = set()
+    prev_blizzard_spots = blizzard_spots.copy()
 
     while len(path_q) != 0:
         (y, x), curr_t = path_q.pop(0)
         if (y, x) == dest:
-            return curr_t
+            # resolve one off error with blizzard state returned at the time dest is reached
+            return curr_t, prev_blizzard_spots
 
         if (y, x, (curr_t - init_t) % map_length) in visited:
             continue
@@ -116,6 +113,7 @@ def traverse(map_spots, map_length, blizzard_spots, src, dest, init_t):
             visited.add((y, x, (curr_t - init_t) % map_length))
 
         if curr_t - init_t + 1 >= len(blizzard_hist):
+            prev_blizzard_spots = blizzard_spots.copy()
             # move all blizzards first
             for b in blizzard_spots:
                 b.move(map_spots)
@@ -135,11 +133,11 @@ def traverse(map_spots, map_length, blizzard_spots, src, dest, init_t):
                 path_q.append((new_pos, curr_t + 1))
 
 def solution():
-    map_spots, map_length, (src, dest), blizzard_spots = parse_input()
+    map_spots, map_length, (src, dest), init_blizzard_spots = parse_input()
 
-    curr_t = traverse(map_spots, map_length, blizzard_spots, src, dest, 0)
-    next_t = traverse(map_spots, map_length, blizzard_spots, dest, src, curr_t + 1)
-    last_t = traverse(map_spots, map_length, blizzard_spots, src, dest, next_t + 1)
+    curr_t, curr_blizard_spots = traverse(map_spots, map_length, init_blizzard_spots, src, dest, 0)
+    next_t, next_blizard_spots = traverse(map_spots, map_length, curr_blizard_spots, dest, src, curr_t)
+    last_t, _ = traverse(map_spots, map_length, next_blizard_spots, src, dest, next_t)
 
     return last_t
 
